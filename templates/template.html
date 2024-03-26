@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Com Port Simulator</title>
+<script>
+var rangeValue = 0.0;
+var isGetValueON = false;
+
+function sendRange() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      rangeValue = document.getElementById("amount").value;
+      if(this.response === "True"){
+        isGetValueON = true;
+      }
+      else{
+        isGetValueON = false;
+        document.getElementById("conBtn").innerHTML = "Connect";
+      }
+      // console.log(rangeValue);
+    }
+  };
+  xhttp.open("GET", "setValue?value="+rangeValue, true);
+  xhttp.send();
+  if(isGetValueON){
+    setTimeout('sendRange()', 500);  
+  }
+  
+}
+
+
+function init(){
+  var xhttp = new XMLHttpRequest();
+  var comportslist;
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var status = this.response.split(",");
+
+      if(status[0] === "True"){
+        document.getElementById("conBtn").innerHTML = "Disconnect";
+        isGetValueON = true;
+        sendRange();
+        document.getElementById("comports").value = status[2];
+
+      }
+      else{
+        isGetValueON = false; 
+        document.getElementById("conBtn").innerHTML = "Connect";
+      }
+      rangeValue = status[1];
+      setSeekerValue(rangeValue);
+    }
+  };
+  xhttp.open("GET", "init", true);
+  xhttp.send();
+
+  getComList();
+}
+
+function getComList(){
+  var xhttp = new XMLHttpRequest();
+  var comportslist;
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      comportslist = this.response;
+      document.getElementById("comports").innerHTML = comportslist;
+    }
+  };
+  xhttp.open("GET", "getComList", true);
+  xhttp.send();
+}
+
+function setSeekerValue(setValue){
+  document.getElementById("rangeInput").value = setValue;
+  document.getElementById("amount").value = setValue;
+}
+
+
+function toggleConnectFunction(){
+  var xhttp = new XMLHttpRequest();
+  var comport = document.getElementById("comports").value;
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      
+      // document.getElementById("test").innerHTML = this.response;
+
+      if(this.response === 'True'){
+        document.getElementById("conBtn").innerHTML = "Disconnect";
+        isGetValueON = true;
+        sendRange();
+      }
+      else{
+        document.getElementById("conBtn").innerHTML = "Connect";
+        isGetValueON = false;
+      }
+    }
+  };
+  xhttp.open("GET", "toggleConnect?comport="+comport, true);
+  xhttp.send();
+}
+
+</script>
+</head>
+
+<body onload="init()">
+<h2>Com Port Simulator for Poultry</h2>
+<br>
+
+
+<label for="comports">Choose COM port:</label>
+<select name="ports" id="comports">
+	
+</select>
+
+<br>
+<br>
+
+<div>
+	<input id="rangeInput" name="weight" type="range" min="0" value ="0" max="1000" step="0.001" oninput="amount.value=rangeInput.value" />
+	<input id="amount" type="number" value="0.0" min="0" max="1000" oninput="rangeInput.value=amount.value" />
+</div>
+
+<br>
+
+<button id="conBtn" onclick="toggleConnectFunction()">Connect</button>
+
+<p id='test'></p>
+</body>
+</html>
