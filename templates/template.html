@@ -119,11 +119,19 @@ function toggleConnectFunction(){
 <div>
 	<input id="rangeInput" name="weight" type="range" min="0" value ="0" max="1000" step="0.001" oninput="amount.value=rangeInput.value" />
 	<input id="amount" type="number" value="0.0" min="0" max="1000" oninput="rangeInput.value=amount.value" />
+  
 </div>
 
 <br>
 
 <button id="conBtn" onclick="toggleConnectFunction()">Connect</button>
+
+<br>
+<br>
+
+<div>
+  <textarea name="reciveMessage" rows="10" cols="30"></textarea>
+</div>
 
 <p id='test'></p>
 </body>
